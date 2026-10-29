@@ -1,0 +1,12 @@
+Youtube & Bilblili retentrion trends analysis
+  -  paper: https://dl.acm.org/doi/pdf/10.1145/3625468.3652175
+  -  github: https://github.com/flowtele/vRetention
+medium RL basic: https://medium.com/data-science/hands-on-introduction-to-reinforcement-learning-in-python-da07f7aaca88
+Q learning: https://medium.com/@goldengrisha/a-beginners-guide-to-q-learning-understanding-with-a-simple-gridworld-example-2b6736e7e2c9
+short videos user watch time
+				github: https://github.com/tsinghua-fib-lab/ShortVideo_dataset	
+				paperhttps://arxiv.org/pdf/2502.05922
+
+MDP paper: https://arxiv.org/pdf/1301.0600
+https://inst.eecs.berkeley.edu/~cs188/textbook/mdp/policies-iteration.html
+https://ftp.cs.ucla.edu/pub/stat_ser/r315.pdf

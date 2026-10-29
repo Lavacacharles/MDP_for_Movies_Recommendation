@@ -1,0 +1,6 @@
+*.pkl
+youtube.csv
+videosLessThan60Seconds.csv
+bilibili.csv
+interacionesHistorico.csv
+youtube_video_age.csv

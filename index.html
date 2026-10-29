@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de YouTube con API de JavaScript</title>
+    <!-- Carga Tailwind CSS para un estilo básico y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5; /* Fondo suave */
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px; /* Ancho máximo para el contenedor */
+            width: 100%;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px; /* Esquinas redondeadas */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            text-align: center;
+        }
+        #player {
+            width: 100%; /* El reproductor ocupará el 100% del ancho de su contenedor */
+            /* La altura se ajusta automáticamente con el script de la API de YouTube,
+               pero puedes establecer un aspect ratio común para iframes de video. */
+            aspect-ratio: 16 / 9; /* Mantiene una relación de aspecto 16:9 */
+            border-radius: 8px; /* Esquinas redondeadas para el iframe */
+            overflow: hidden; /* Asegura que las esquinas redondeadas se apliquen bien */
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .play-button {
+            background-color: #ef4444; /* Rojo de YouTube */
+            color: white;
+            border: none;
+        }
+        .play-button:hover {
+            background-color: #dc2626;
+        }
+        .pause-button {
+            background-color: #3b82f6; /* Azul */
+            color: white;
+            border: none;
+        }
+        .pause-button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">Reproductor de YouTube Interactivo</h1>
+        <!-- El div donde se insertará el reproductor de YouTube -->
+        <div id="player"></div>
+
+        <div class="controls">
+            <button class="play-button" onclick="playVideo()">Reproducir</button>
+            <button class="pause-button" onclick="pauseVideo()">Pausar</button>
+        </div>
+
+        <p class="mt-4 text-gray-600">Revisa la consola del navegador (F12) para ver los eventos del reproductor.</p>
+    </div>
+
+    <script>
+        // 1. Carga asincrónicamente el script de la API de IFrame Player de YouTube.
+        // Este código inserta una etiqueta <script> en la página para cargar la API.
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // 2. Esta variable 'player' almacenará el objeto reproductor de YouTube.
+        var player;
+
+        // 3. Esta función se llamará automáticamente cuando la API de IFrame Player esté lista.
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '390', // Altura del reproductor
+                width: '640',  // Ancho del reproductor
+                videoId: 'cMhT1SqxqHY', // El ID del video de YouTube que quieres reproducir
+                playerVars: {
+                    'autoplay': 1, // 0: no autoplay, 1: autoplay
+                    'controls': 1, // 0: ocultar controles, 1: mostrar controles
+                    'modestbranding': 1, // 0: mostrar logo de YouTube, 1: ocultar
+                    'rel': 0 // 0: no mostrar videos relacionados del mismo canal
+                },
+                events: {
+                    'onReady': onPlayerReady,      // Se llama cuando el reproductor está listo
+                    'onStateChange': onPlayerStateChange // Se llama cuando el estado del reproductor cambia
+                }
+            });
+        }
+
+        // 4. Esta función se ejecuta una vez que el reproductor de video de YouTube ha cargado.
+        function onPlayerReady(event) {
+            console.log('Reproductor listo!');
+            // Puedes ejecutar acciones aquí, por ejemplo, reproducir el video automáticamente.
+            // event.target.playVideo(); // Ya lo configuramos con 'autoplay': 1 en playerVars
+        }
+
+        // 5. Esta función se llama cuando el estado de reproducción del video cambia.
+        // event.data contiene el nuevo estado (ej., -1 unstarted, 0 ended, 1 playing, 2 paused, etc.)
+        function onPlayerStateChange(event) {
+            var state = event.data;
+            var stateText = '';
+            switch(state) {
+                case YT.PlayerState.ENDED:
+                    stateText = 'Finalizado';
+                    break;
+                case YT.PlayerState.PLAYING:
+                    stateText = 'Reproduciendo';
+                    break;
+                case YT.PlayerState.PAUSED:
+                    stateText = 'Pausado';
+                    break;
+                case YT.PlayerState.BUFFERING:
+                    stateText = 'Cargando (Buffering)';
+                    break;
+                case YT.PlayerState.CUED:
+                    stateText = 'En cola';
+                    break;
+                case -1:
+                    stateText = 'No iniciado';
+                    break;
+                default:
+                    stateText = 'Estado desconocido';
+            }
+            console.log('Estado del reproductor cambiado a:', stateText);
+        }
+
+        // Funciones para controlar el reproductor desde los botones
+        function playVideo() {
+            if (player && typeof player.playVideo === 'function') {
+                player.playVideo();
+                console.log('Comando: Reproducir');
+            } else {
+                console.warn('El reproductor no está listo o la función playVideo no está disponible.');
+            }
+        }
+
+        function pauseVideo() {
+            if (player && typeof player.pauseVideo === 'function') {
+                player.pauseVideo();
+                console.log('Comando: Pausar');
+            } else {
+                console.warn('El reproductor no está listo o la función pauseVideo no está disponible.');
+            }
+        }
+    </script>
+</body>
+</html>
